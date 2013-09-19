@@ -12,7 +12,7 @@ $(function(){
 		$('#name').val(prompt('What is your name?'));
 	}
 	var messages = [];
-    var socket = io.connect('http://station01:1337');
+    var socket = io.connect('/');
 	
 	socket.emit('initialize', { name:$('#name').val(),room:room});
 	

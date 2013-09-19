@@ -7,9 +7,5 @@
         "express": "latest",
         "jade": "latest"
     },
-	"engines": {
-		"node": "0.10.18",
-		"npm":  "1.3.8"
-	}
     "author": "Djane Rey Mabelin"
 }

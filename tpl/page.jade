@@ -1,0 +1,16 @@
+!!!
+html
+	head
+		title= "Real time web chat"
+		script(src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js')
+		script(src='/chat.js')
+		script(src='/socket.io/socket.io.js')
+	body
+		div#content(style='width: 500px; height: 300px; margin: 0 0 20px 0; border: solid 1px #999; overflow-y: scroll;')
+		div.controls
+			input#name(style='width:100px;' placeholder="Name" disabled="disabled")
+			input#field(style='width:350px;' placeholder="Message")
+			input#send(type='button', value='send')
+		div.users
+			strong="Online"
+			ul#userList

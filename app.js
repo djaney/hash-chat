@@ -1,6 +1,6 @@
 var express = require("express");
 var app = express();
-var port = 80;
+var port = 1337;
 // load Jade tamplate engine
 app.set('views', __dirname + '/tpl');
 app.set('view engine', "jade");

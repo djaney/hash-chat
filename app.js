@@ -1,6 +1,7 @@
 var express = require("express");
 var app = express();
-var port = process.env.PORT || 80;
+var PORT = process.env.PORT || 80;
+var HISTORY_LIMIT = 20;
 // load Jade tamplate engine
 app.set('views', __dirname + '/tpl');
 app.set('view engine', "jade");
@@ -9,11 +10,12 @@ app.engine('jade', require('jade').__express);
  
 function ChatServer(io){
 	var users = {};
+	var history = {};
 	
-	io.configure(function () { 
-	  io.set("transports", ["xhr-polling"]); 
-	  io.set("polling duration", 10); 
-	});
+	/* io.configure(function () { 
+		io.set("transports", ["xhr-polling"]); 
+		io.set("polling duration", 10); 
+	}); */
 		
 	io.sockets.on('connection', function (socket) {
 		var socketId = socket.id;
@@ -26,11 +28,21 @@ function ChatServer(io){
 			}
 			users[room][socketId] = data;
 			
-			socket.in(room).emit('allChatRoomUsers',{users:users[room]});
+			if(!history.hasOwnProperty(room)){
+				history[room] = [];
+			}
+			
+			socket.in(room).emit('initializeChatData',{users:users[room],history:history[room]});
 			socket.broadcast.to(room).emit('addChatUser',  {user:data,userId:socketId});
 		});
 		
 		socket.on('sendChat', function (data) {
+			if(!history.hasOwnProperty(room)){
+				history[room] = [];
+			}
+			history[room].push(data);
+			if(history[room].length>HISTORY_LIMIT) history[room].shift();
+			
 			io.sockets.in(room).emit('chatMessage', data);
 		});
 		
@@ -55,11 +67,11 @@ app.get("/", function(req, res){
 app.use(express.static(__dirname + '/public'));
 
 // initiate socet.io
-var io = require('socket.io').listen(app.listen(port));
+var io = require('socket.io').listen(app.listen(PORT));
 
 // define connection handler
 chat = new ChatServer(io);
 
 
 
-console.log("Listening on port " + port);
+console.log("Listening on port " + PORT);

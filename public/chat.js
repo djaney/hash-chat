@@ -1,5 +1,5 @@
 var users = {};
-var room = 'global';
+var room = '#';
 
 if(window.location.hash!='' && window.location.hash!='#'){
 	room = window.location.hash;
@@ -19,25 +19,28 @@ $(function(){
 	
     socket.on('addChatUser', function (data) {
 		users[data.userId] = data.user;
-		pushMessage('<strong>'+data.user.name+'</strong> joined the room');
+		if(!pushMessage({name:data.user.name},'join'))  console.log("There is a problem:", data);
 		renderUsers();
     });
 	
-    socket.on('allChatRoomUsers', function (data) {
+    socket.on('initializeChatData', function (data) {
 		users = data.users;
+		for(var i in data.history){
+			if(!pushMessage(data.history[i]))  console.log("There is a problem:", data.history[i]);
+		}
 		renderUsers();
     });
 	
     socket.on('removeChatUser', function (data) {
-		pushMessage('<strong>'+users[data.userId].name+'</strong> left the room');
+        if(!pushMessage({name:users[data.userId].name},'left')) {
+            console.log("There is a problem:", data);
+        }
 		delete users[data.userId];
 		renderUsers();
     });
 	
     socket.on('chatMessage', function (data) {
-        if(data.message && data.name) {
-			pushMessage('<strong>'+data.name+'</strong>: '+data.message);
-        } else {
+        if(!pushMessage(data)) {
             console.log("There is a problem:", data);
         }
     });
@@ -62,14 +65,33 @@ $(function(){
 	});
 	
 	
-	function pushMessage(str){
+	function pushMessage(data,action){
+	
+		if(!data) return false;
+	
+		action = action || 'message';
+		console.log('action:',action);
+		if(action=='message' && data.hasOwnProperty('message') && data.hasOwnProperty('name')) {
+			
+			var str = '<strong>'+data.name+'</strong>: '+data.message;
             messages.push(str);
-            var html = '';
-            for(var i=0; i<messages.length; i++) {
-                html += messages[i] + '<br />';
-            }
-            $('#content').html(html);
-			$('#content').scrollTop(messages.length*25);
+		}else if(action=='left' && data.hasOwnProperty('name')){
+			var str = '<strong>'+data.name+'</strong> left the room';
+            messages.push(str);
+		}else if(action=='join' && data.hasOwnProperty('name')){
+			var str = '<strong>'+data.name+'</strong> joined the room';
+            messages.push(str);
+		}else{
+			return false;
+		}
+
+		var html = '';
+		for(var i=0; i<messages.length; i++) {
+			html += messages[i] + '<br />';
+		}
+		$('#content').html(html);
+		$('#content').scrollTop(messages.length*25);
+		return true;
 	}
 	
 	function renderUsers(){

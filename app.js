@@ -1,6 +1,6 @@
 var express = require("express");
 var app = express();
-var port = 80;
+var port = 1337;
 // load Jade tamplate engine
 app.set('views', __dirname + '/tpl');
 app.set('view engine', "jade");
@@ -9,6 +9,12 @@ app.engine('jade', require('jade').__express);
  
 function ChatServer(io){
 	var users = {};
+	
+	io.configure(function () { 
+	  io.set("transports", ["xhr-polling"]); 
+	  io.set("polling duration", 10); 
+	});
+		
 	io.sockets.on('connection', function (socket) {
 		var socketId = socket.id;
 		var room = '';

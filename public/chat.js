@@ -1,6 +1,6 @@
 var users = {};
 var room = '#';
-
+var email = '';
 if(window.location.hash!='' && window.location.hash!='#'){
 	room = window.location.hash;
 }
@@ -11,10 +11,13 @@ $(function(){
 	while($.trim($('#name').val())==''){
 		$('#name').val(prompt('What is your name?'));
 	}
+	while($.trim(email)==''){
+		email = prompt('What is your email? (for gravatar only)');
+	}
 	var messages = [];
     var socket = io.connect('/');
 	
-	socket.emit('initialize', { name:$('#name').val(),room:room});
+	socket.emit('initialize', { name:$('#name').val(),room:room,email:email});
 	
 	
     socket.on('addChatUser', function (data) {
@@ -50,7 +53,7 @@ $(function(){
 			$('#name').focus();
 			alert('Enter Name!!!');
 		}else if($.trim($('#field').val()!='')){
-			socket.emit('sendChat', { message: $('#field').val(),name:$('#name').val() });
+			socket.emit('sendChat', { message: $('#field').val(),name:$('#name').val(),email:email });
 			$('#field').val('');
 			$('#field').focus();
 		}
@@ -71,9 +74,8 @@ $(function(){
 	
 		action = action || 'message';
 		console.log('action:',action);
-		if(action=='message' && data.hasOwnProperty('message') && data.hasOwnProperty('name')) {
-			
-			var str = '<strong>'+data.name+'</strong>: '+data.message;
+		if(action=='message' && data.hasOwnProperty('message') && data.hasOwnProperty('name')&& data.hasOwnProperty('email')) {
+			var str = '<img style="float:left;margin: 0;padding: 5px;border-radius: 32px;-moz-border-radius: 43px;" src="http://www.gravatar.com/avatar/'+MD5(data.email)+'?s=32" />'+'<p style="float:left;margin:0;padding: 0;padding-left: 5px;margin-top: 9px;"><strong>'+data.name+'</strong>: '+data.message+'</p>';
             messages.push(str);
 		}else if(action=='left' && data.hasOwnProperty('name')){
 			var str = '<strong>'+data.name+'</strong> left the room';
@@ -87,7 +89,8 @@ $(function(){
 
 		var html = '';
 		for(var i=0; i<messages.length; i++) {
-			html += messages[i] + '<br />';
+			html += messages[i];
+			html+='<div style="clear:both;"></div>';
 		}
 		$('#content').html(html);
 		$('#content').scrollTop(messages.length*25);

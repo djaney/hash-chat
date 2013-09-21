@@ -24,7 +24,10 @@ html(lang="en" ng-app)
 						div.panel.panel-default
 							div.panel-heading
 								h4.panel-title
-									a.accordion-toggle(data-toggle="collapse" data-parent="#accordion" href="#collapseOnline")="Online"
+									span.badge
+										{{getUserCount()}}
+									a.accordion-toggle(data-toggle="collapse" data-parent="#accordion" href="#collapseOnline")
+										| Online
 							div#collapseOnline.panel-collapse.collapse
 								div.users
 									ul#userList.nav.nav-pills.nav-stacked

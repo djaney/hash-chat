@@ -12,6 +12,10 @@ function ChatCtrl($scope){
 	}
 
 	
+	$scope.getUserCount = function(){
+		return Object.keys($scope.users).length;
+	};
+	
 	socket.emit('initialize', { name:$scope.name,room:$scope.room,email:$scope.email});
 	
 	

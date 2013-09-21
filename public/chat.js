@@ -1,6 +1,7 @@
 var users = {};
 var room = '#';
 var email = '';
+var name = '';
 if(window.location.hash!='' && window.location.hash!='#'){
 	room = window.location.hash;
 }
@@ -8,8 +9,8 @@ if(window.location.hash!='' && window.location.hash!='#'){
 $(function(){
 	
 
-	while($.trim($('#name').val())==''){
-		$('#name').val(prompt('What is your name?'));
+	while($.trim(name)==''){
+		name = prompt('What is your name?');
 	}
 	while($.trim(email)==''){
 		email = prompt('What is your email? (for gravatar only)');
@@ -17,7 +18,7 @@ $(function(){
 	var messages = [];
     var socket = io.connect('/');
 	
-	socket.emit('initialize', { name:$('#name').val(),room:room,email:email});
+	socket.emit('initialize', { name:name,room:room,email:email});
 	
 	
     socket.on('addChatUser', function (data) {
@@ -47,23 +48,16 @@ $(function(){
             console.log("There is a problem:", data);
         }
     });
-	$('#send').click(function(){
-		
-		if($.trim($('#name').val())==''){
-			$('#name').focus();
-			alert('Enter Name!!!');
-		}else if($.trim($('#field').val()!='')){
-			socket.emit('sendChat', { message: $('#field').val(),name:$('#name').val(),email:email });
-			$('#field').val('');
-			$('#field').focus();
-		}
-	});
 	
 	$('#field').keyup(function(e){
 		var key = e.charCode || e.keyCode;
 		
-		if(key==13){
-			$('#send').click();
+			if(key==13){
+			if($.trim($('#field').val()!='')){
+				socket.emit('sendChat', { message: $('#field').val(),name:name,email:email });
+				$('#field').val('');
+				$('#field').focus();
+			}
 		}
 	});
 	
@@ -101,7 +95,7 @@ $(function(){
 		var str = '';
 		
 		for(i in users){
-			str += '<li>'+users[i].name+'</li>';
+			str += '<li><a>'+users[i].name+'</a></li>';
 		}
 		
 		$('#userList').html(str);

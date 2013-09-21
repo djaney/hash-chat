@@ -12,12 +12,9 @@ function ChatServer(io){
 	var users = {};
 	var history = {};
 	
-	io.configure(function () { 
-		io.set("transports", ["xhr-polling"]); 
-		io.set("polling duration", 10); 
-	});
-		
-	io.sockets.on('connection', function (socket) {
+
+	
+	var run = function (socket) {
 		var socketId = socket.id;
 		var room = '';
 		socket.on('initialize', function (data) {
@@ -54,7 +51,22 @@ function ChatServer(io){
 			}
 			io.sockets.in(room).emit('removeChatUser',{userId:socketId});
 	   });
-	});
+	};
+	
+	try{
+		// try websocket
+		io.sockets.on('connection', run);
+	}catch(err){
+		// try long poll
+		io.configure(function () { 
+			io.set("transports", ["xhr-polling"]); 
+			io.set("polling duration", 10); 
+		});
+		io.sockets.on('connection', run);
+	}
+	
+	
+	
 };
 
 // routes

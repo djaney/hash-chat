@@ -31,6 +31,9 @@ function ChatServer(io){
 			
 			socket.in(room).emit('initializeChatData',{users:users[room],history:history[room]});
 			socket.broadcast.to(room).emit('addChatUser',  {user:data,userId:socketId});
+			
+			socket.emit('chatMessage',{name:'System',message:'Welcome!',email:'chat@codertalks.com'});
+			
 		});
 		
 		socket.on('sendChat', function (data) {

@@ -45,7 +45,7 @@ html(lang="en" ng-app)
 											div#content.form-control(style='height: 300px;overflow-y: auto;')
 												div.clearfix(ng-repeat="msg in messages" ng-animate="animate")
 													p(style="margin:0;padding: 0;")
-														img.pull-left(style="margin: 5px;border-radius: 32px;-moz-border-radius: 43px; width:32px; height:32px;" src="{{msg.img}}")
+														img.pull-left(style="margin: 5px;border-radius: 32px;-moz-border-radius: 43px; width:32px; height:32px;" src="{{msg.img}}" ng-hide="msg.img==''")
 														p(style="margin:10px 0 0 0")
 															strong="{{msg.name}}:"
 															|&nbsp;{{msg.message}}

@@ -34,9 +34,11 @@ function ChatCtrl($scope){
     });
 	
     socket.on('removeChatUser', function (data) {
-        if(!pushMessage({name:$scope.users[data.userId].name},'left')) {
-            console.log("There is a problem:", data);
-        }
+		if(typeof $scope.users[data.userId]!='undefined'){
+			if(!pushMessage({name:$scope.users[data.userId].name},'left')) {
+				console.log("There is a problem:", data);
+			}
+		}
 		delete $scope.users[data.userId];
 		renderUsers();
     });

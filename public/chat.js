@@ -1,34 +1,28 @@
-var users = {};
-var room = '#';
-var email = '';
-var name = '';
-if(window.location.hash!='' && window.location.hash!='#'){
-	room = window.location.hash;
-}
-
-$(function(){
-	
-
-	while($.trim(name)==''){
-		name = prompt('What is your name?');
-	}
-	while($.trim(email)==''){
-		email = prompt('What is your email? (for gravatar only)');
-	}
-	var messages = [];
+function ChatCtrl($scope){
+	$scope.users = {};
+	$scope.room = '#';
+	$scope.email = '';
+	$scope.name = '';
+	$scope.messages = [];
     var socket = io.connect('/');
 	
-	socket.emit('initialize', { name:name,room:room,email:email});
+	
+	if(window.location.hash!='' && window.location.hash!='#'){
+		$scope.room = window.location.hash;
+	}
+
+	
+	socket.emit('initialize', { name:$scope.name,room:$scope.room,email:$scope.email});
 	
 	
     socket.on('addChatUser', function (data) {
-		users[data.userId] = data.user;
+		$scope.users[data.userId] = data.user;
 		if(!pushMessage({name:data.user.name},'join'))  console.log("There is a problem:", data);
 		renderUsers();
     });
 	
     socket.on('initializeChatData', function (data) {
-		users = data.users;
+		$scope.users = data.users;
 		for(var i in data.history){
 			if(!pushMessage(data.history[i]))  console.log("There is a problem:", data.history[i]);
 		}
@@ -36,10 +30,10 @@ $(function(){
     });
 	
     socket.on('removeChatUser', function (data) {
-        if(!pushMessage({name:users[data.userId].name},'left')) {
+        if(!pushMessage({name:$scope.users[data.userId].name},'left')) {
             console.log("There is a problem:", data);
         }
-		delete users[data.userId];
+		delete $scope.users[data.userId];
 		renderUsers();
     });
 	
@@ -49,19 +43,6 @@ $(function(){
         }
     });
 	
-	$('#field').keyup(function(e){
-		var key = e.charCode || e.keyCode;
-		
-			if(key==13){
-			if($.trim($('#field').val()!='')){
-				socket.emit('sendChat', { message: $('#field').val(),name:name,email:email });
-				$('#field').val('');
-				$('#field').focus();
-			}
-		}
-	});
-	
-	
 	function pushMessage(data,action){
 	
 		if(!data) return false;
@@ -69,36 +50,59 @@ $(function(){
 		action = action || 'message';
 		console.log('action:',action);
 		if(action=='message' && data.hasOwnProperty('message') && data.hasOwnProperty('name')&& data.hasOwnProperty('email')) {
-			var str = '<img style="float:left;margin: 0;padding: 5px;border-radius: 32px;-moz-border-radius: 43px;" src="http://www.gravatar.com/avatar/'+MD5(data.email)+'?s=32" />'+'<p style="float:left;margin:0;padding: 0;padding-left: 5px;margin-top: 9px;"><strong>'+data.name+'</strong>: '+data.message+'</p>';
-            messages.push(str);
+            $scope.messages.push({
+				img:'http://www.gravatar.com/avatar/'+MD5(data.email)+'?s=32',
+				name:data.name,
+				message:data.message,
+			});
 		}else if(action=='left' && data.hasOwnProperty('name')){
-			var str = '<strong>'+data.name+'</strong> left the room';
-            messages.push(str);
+            $scope.messages.push({
+				img:'',
+				name:data.name,
+				message:'left the room',
+			});
 		}else if(action=='join' && data.hasOwnProperty('name')){
-			var str = '<strong>'+data.name+'</strong> joined the room';
-            messages.push(str);
+            $scope.messages.push({
+				img:'',
+				name:data.name,
+				message:'joined the room',
+			});
 		}else{
 			return false;
 		}
-
-		var html = '';
-		for(var i=0; i<messages.length; i++) {
-			html += messages[i];
-			html+='<div style="clear:both;"></div>';
-		}
-		$('#content').html(html);
-		$('#content').scrollTop(messages.length*25);
+		if(!$scope.$$phase) $scope.$apply();
+		$('#content').scrollTop($('#content')[0].scrollHeight);
 		return true;
 	}
 	
 	function renderUsers(){
-		var str = '';
-		
-		for(i in users){
-			str += '<li><a>'+users[i].name+'</a></li>';
-		}
-		
-		$('#userList').html(str);
+		if(!$scope.$$phase) $scope.$apply();
 	}
-	
-});
+	$(function(){
+		$('#field').keyup(function(e){
+			var key = e.charCode || e.keyCode;
+			
+				if(key==13){
+				if($.trim($('#field').val())!=''){
+					socket.emit('sendChat', { message: $('#field').val(),name:$scope.name,email:$scope.email });
+					$('#field').val('');
+					$('#field').focus();
+				}
+			}
+		});
+		$('#name,#email').keyup(function(e){
+			var key = e.charCode || e.keyCode;
+			
+			if(key==13){
+				if($.trim($('#name').val())!='' && $.trim($('#email').val())!=''){
+					$('#field').val('');
+					$('#field').focus();
+					$scope.name = $.trim($('#name').val());
+					$scope.email = $.trim($('#email').val());
+					if(!$scope.$$phase) $scope.$apply();
+				}
+			}
+		});
+	});
+
+}

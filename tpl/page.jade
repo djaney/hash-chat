@@ -1,21 +1,23 @@
 !!!
-html(lang="en")
+html(lang="en" ng-app)
 	head
 		title= "Real time web chat"
 		
 		meta(name="viewport" content="width=device-width, initial-scale=1.0")
 		
 		script(src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")
+		script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js")
 		
 		link(href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet")
 		script(src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js")
+		link(href="/app.css" rel="stylesheet")
 		
 		
 		script(src="/md5.js")
 		script(src="/socket.io/socket.io.js")
 		script(src="/chat.js")
 	body
-		div.container
+		div.container(ng-controller="ChatCtrl")
 			div.row		
 				div.col-md-12
 					div#accordion.panel-group
@@ -26,19 +28,36 @@ html(lang="en")
 							div#collapseOnline.panel-collapse.collapse
 								div.users
 									ul#userList.nav.nav-pills.nav-stacked
+										li
+											a(ng-repeat="u in users")="{{u.name}}"
 
 						div.panel.panel-default
 							div.panel-heading
 								h4.panel-title
-									a.accordion-toggle(data-toggle="collapse" data-parent="#accordion" href="#collapseChar")="Chat"
+									a.accordion-toggle(data-toggle="collapse" data-parent="#accordion" href="#collapseChar")="Chat {{room}}"
 							div#collapseChar.panel-collapse.collapse.in	
 								div.panel-body
 									div.row
 										div.form-group.col-xs-12
 											div#content.form-control(style='height: 300px;overflow-y: auto;')
+												div.clearfix(ng-repeat="msg in messages" ng-animate="animate")
+													p(style="margin:0;padding: 0;")
+														img.pull-left(style="margin: 5px;border-radius: 32px;-moz-border-radius: 43px; width:32px; height:32px;" src="{{msg.img}}")
+														p(style="margin:10px 0 0 0")
+															strong="{{msg.name}}:"
+															|&nbsp;{{msg.message}}
+														
 								div.panel-body
 									div.row
 										div.form-inline
 											div.form-group.col-xs-12
 												label.sr-only(for="#field")="Message"
-												input#field.form-control(placeholder="Message" maxlength="120")
+												input#field.form-control(placeholder="Message" maxlength="250" ng-hide="name==''")
+												
+											div.form-group.col-xs-6
+												label.sr-only(for="#name")="Name"
+												input#name.form-control(placeholder="Name" maxlength="25" ng-show="name=='' && email==''")
+												
+											div.form-group.col-xs-6
+												label.sr-only(for="#email")="Email"
+												input#email.form-control( type="email" placeholder="Email (for Gravatar)" maxlength="50" ng-show="name=='' && name==''")

@@ -23,6 +23,7 @@ function ChatServer(io){
 			if(!users.hasOwnProperty(room)){
 				users[room] = {};
 			}
+			if(data.name!='')
 			users[room][socketId] = data;
 			
 			if(!history.hasOwnProperty(room)){
@@ -33,7 +34,10 @@ function ChatServer(io){
 			if(data.name!='')
 			socket.broadcast.to(room).emit('addChatUser',  {user:data,userId:socketId});
 			
-			socket.emit('chatMessage',{name:'System',message:'Welcome!',email:'chat@codertalks.com'});
+			if(data.name=='')
+				socket.emit('chatMessage',{name:'System',message:'Welcome! You need to login. Enter your name and email address and press enter.',email:'chat@codertalks.com'});
+			else
+				socket.emit('chatMessage',{name:'System',message:'Welcome '+data.name+'!',email:'chat@codertalks.com'});
 			
 		});
 		

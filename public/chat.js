@@ -48,7 +48,6 @@ function ChatCtrl($scope){
 		if(!data) return false;
 	
 		action = action || 'message';
-		console.log('action:',action);
 		if(action=='message' && data.hasOwnProperty('message') && data.hasOwnProperty('name')&& data.hasOwnProperty('email')) {
             $scope.messages.push({
 				img:'http://www.gravatar.com/avatar/'+MD5(data.email)+'?s=32',
@@ -99,6 +98,7 @@ function ChatCtrl($scope){
 					$('#field').focus();
 					$scope.name = $.trim($('#name').val());
 					$scope.email = $.trim($('#email').val());
+					socket.emit('initialize', { name:$scope.name,room:$scope.room,email:$scope.email});
 					if(!$scope.$$phase) $scope.$apply();
 				}
 			}

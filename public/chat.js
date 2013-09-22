@@ -109,6 +109,9 @@ function ChatCtrl($scope){
 				}
 			}
 		});
+		$(window).on('hashchange', function() {
+			window.location.reload();
+		});
 	});
 
 }

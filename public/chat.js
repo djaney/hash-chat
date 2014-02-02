@@ -68,9 +68,6 @@ function ChatCtrl($scope){
     });
 	
 	function pushMessage(data,action){
-		
-		console.log(data);
-		
 		if(!data) return false;
 	
 		action = action || 'message';

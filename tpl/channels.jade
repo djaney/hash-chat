@@ -23,13 +23,11 @@ html(lang="en" ng-app)
 							div.panel-body
 								div.row(ng-repeat="area in areas")
 									h2.col-xs-12="{{area.name}} "
-										span(ng-show="area.count")
-											[{{area.count}}]
+										[{{area.count || 0}}]
 										a(href="/{{area.hash}}")="{{area.hash}}"
 									ul
 										li.col-xs-4(ng-repeat="channel in area.channels | orderBy:name")
-											span(ng-show="channel.count")
-												[{{channel.count}}]
+											[{{channel.count || 0}}]
 											a(href="/{{channel.hash}}")="{{channel.name}} ({{channel.hash}})"
 	div#fb-root
 	script.

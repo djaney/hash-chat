@@ -7,6 +7,7 @@ function ChatCtrl($scope){
 	$scope.messages = [];
     var socket = io.connect('/');
 	
+	socket.emit('initialize', { name:$scope.name,room:$scope.room,email:$scope.email,fbid:$scope.fbid});	
 	
 	if(window.location.hash!='' && window.location.hash!='#'){
 		$scope.room = window.location.hash;
@@ -24,6 +25,7 @@ function ChatCtrl($scope){
 				FB.api('/me', 'get',{},function(data){
 					$scope.name = data.name;
 					$scope.fbid = data.id;
+					socket.emit('initialize', { name:$scope.name,room:$scope.room,email:$scope.email,fbid:$scope.fbid});
 					if(!$scope.$$phase) $scope.$apply();
 				});
 			}
@@ -33,7 +35,6 @@ function ChatCtrl($scope){
 	
 	
 	
-	socket.emit('initialize', { name:$scope.name,room:$scope.room,email:$scope.email,fbid:$scope.fbid});
 	
 	
     socket.on('addChatUser', function (data) {

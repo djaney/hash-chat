@@ -21,7 +21,7 @@ html(lang="en" ng-app)
 		div.container(ng-controller="ChatCtrl")
 			div.row		
 				div.col-xs-9
-						div.panel.panel-default
+						div.panel.panel-primary
 							div.panel-heading
 								h4.panel-title="Chat {{room}}"
 							div#collapse-char.panel-collapse.collapse.in
@@ -31,7 +31,7 @@ html(lang="en" ng-app)
 											div#content.form-control(style='height: 300px;overflow-y: auto;')
 												div.clearfix(ng-repeat="msg in messages" ng-animate="animate")
 													p(style="margin:0;padding: 0;")
-														img.pull-left(style="margin: 5px;border-radius: 32px;-moz-border-radius: 43px; width:32px; height:32px;" src="{{msg.img}}" ng-hide="msg.img==''")
+														img.pull-left(style="margin: 5px;border-radius: 32px;-moz-border-radius: 43px; width:32px; height:32px;" ng-src="{{msg.img}}" ng-hide="msg.img==''")
 														p(style="margin:10px 0 0 0")
 															strong="{{msg.name}}:"
 															|&nbsp;{{msg.message}}
@@ -42,18 +42,18 @@ html(lang="en" ng-app)
 										div.form-inline(ng-hide="name==''")
 											div.form-group.col-xs-12
 												label.sr-only(for="#field")="Message"
-												input#field.form-control(placeholder="Message" maxlength="250")
+												textarea#field.form-control(placeholder="Message" maxlength="250")
 				div.col-xs-3
-						div.panel.panel-default
+						div.panel.panel-primary
 							div.panel-heading
 								h4.panel-title
-									span.badge
-										{{getUserCount()}}
-									a.accordion-toggle(data-toggle="collapse" data-parent="#accordion" href="#collapseOnline")
-										| Online
-							div#collapseOnline.panel-collapse.collapse
+									| {{getUserCount()}}&nbsp;Online
+							div.panel-body
 								div.users
-									ul#userList.nav.nav-pills.nav-stacked
-										li
-											a(ng-repeat="u in users")="{{u.name}}"
+									ul.nav.nav-stacked(style="font-size:.8em;")
+										li(ng-repeat="u in users | orderBy:name")
+											a(target="_blank" href="https://facebook.com/{{u.fbid}}" style="padding:0;")
+												img.pull-left(ng-src="//graph.facebook.com/{{u.fbid}}/picture?height=32&width=32")
+												div.pull-left(style="padding:10px;padding:8px;")
+													{{u.name}}
 	div#fb-root

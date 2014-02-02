@@ -35,7 +35,7 @@ function ChatServer(io){
 			socket.broadcast.to(room).emit('addChatUser',  {user:data,userId:socketId});
 			
 			if(data.name=='')
-				socket.emit('chatMessage',{name:'System',message:'Welcome! You need to login. Enter your name and email address and press enter.',email:'chat@codertalks.com'});
+				socket.emit('chatMessage',{name:'System',message:'Welcome! You need to login.',email:'chat@codertalks.com'});
 			else
 				socket.emit('chatMessage',{name:'System',message:'Welcome '+data.name+'!',email:'chat@codertalks.com'});
 			

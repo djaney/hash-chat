@@ -26,7 +26,7 @@ html(lang="en" ng-app)
 										| [{{area.count || 0}}]
 										a(href="/{{area.hash}}")="{{area.hash}}"
 									ul
-										li.clearfix.col-xs-4(ng-repeat="channel in area.channels | orderBy:name")
+										li.col-xs-4(ng-repeat="channel in area.channels | orderBy:name")
 											| [{{channel.count || 0}}]
 											a(href="/{{channel.hash}}")="{{channel.name}} ({{channel.hash}})"
 											br

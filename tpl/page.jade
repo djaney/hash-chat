@@ -52,7 +52,7 @@ html(lang="en" ng-app)
 							div.panel-body
 								div.users
 									ul.nav.nav-stacked(style="font-size:.8em;")
-										li(ng-repeat="u in users | orderBy:name")
+										li.clearfix(ng-repeat="u in users | orderBy:name")
 											a(target="_blank" href="https://facebook.com/{{u.fbid}}" style="padding:0;")
 												img.pull-left(ng-src="//graph.facebook.com/{{u.fbid}}/picture?height=32&width=32")
 												div.pull-left(style="padding:10px;padding:8px;")

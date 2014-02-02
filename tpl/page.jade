@@ -49,8 +49,10 @@ html(lang="en" ng-app)
 														p(style="margin:10px 0 0 0")
 															strong="{{msg.name}}:"
 															|&nbsp;{{msg.message}}
-														
 								div.panel-body
+									div.row
+										div.form-group.col-xs-12
+											a.btn.btn-primary(ng-click="loginFacebook()" ng-show="name=='' && email==''")="Facebook login"
 									div.row
 										div.form-inline
 											div.form-group.col-xs-12
@@ -64,3 +66,4 @@ html(lang="en" ng-app)
 											div.form-group.col-xs-6
 												label.sr-only(for="#email")="Email"
 												input#email.form-control( type="email" placeholder="Email (for Gravatar)" maxlength="50" ng-show="name=='' && name==''")
+	div#fb-root

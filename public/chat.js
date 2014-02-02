@@ -3,6 +3,7 @@ function ChatCtrl($scope){
 	$scope.room = '#';
 	$scope.email = '';
 	$scope.name = '';
+	$scope.fbid = '';
 	$scope.messages = [];
     var socket = io.connect('/');
 	
@@ -16,7 +17,23 @@ function ChatCtrl($scope){
 		return Object.keys($scope.users).length;
 	};
 	
-	socket.emit('initialize', { name:$scope.name,room:$scope.room,email:$scope.email});
+	
+	$scope.loginFacebook = function(){
+		FB.login(function(data){
+			if(data.status=='connected'){
+				FB.api('/me', 'get',{},function(data){
+					$scope.name = data.name;
+					$scope.fbid = data.id;
+					if(!$scope.$$phase) $scope.$apply();
+				});
+			}
+		}, {scope: 'publish_actions'});
+		if(!$scope.$$phase) $scope.$apply();
+	}
+	
+	
+	
+	socket.emit('initialize', { name:$scope.name,room:$scope.room,email:$scope.email,fbid:$scope.fbid});
 	
 	
     socket.on('addChatUser', function (data) {
@@ -50,16 +67,27 @@ function ChatCtrl($scope){
     });
 	
 	function pushMessage(data,action){
-	
+		
+		console.log(data);
+		
 		if(!data) return false;
 	
 		action = action || 'message';
-		if(action=='message' && data.hasOwnProperty('message') && data.hasOwnProperty('name')&& data.hasOwnProperty('email')) {
-            $scope.messages.push({
-				img:'http://www.gravatar.com/avatar/'+MD5(data.email)+'?s=32',
+		if(action=='message' && data.hasOwnProperty('message') && data.hasOwnProperty('name') && data.hasOwnProperty('email')) {
+			var msgData = {
+				
 				name:data.name,
 				message:data.message,
-			});
+			};
+			
+			if(data.hasOwnProperty('email') && data.email!=''){
+				msgData.img = '//www.gravatar.com/avatar/'+MD5(data.email)+'?s=32';
+			}else if(data.hasOwnProperty('fbid') && data.fbid!=''){
+				msgData.img = '//graph.facebook.com/'+data.fbid+'/picture?height=32&width=32';
+			}
+			
+			
+            $scope.messages.push(msgData);
 		}else if(action=='left' && data.hasOwnProperty('name')){
             $scope.messages.push({
 				img:'',
@@ -83,35 +111,57 @@ function ChatCtrl($scope){
 	function renderUsers(){
 		if(!$scope.$$phase) $scope.$apply();
 	}
-	$(function(){
-		$('#field').keyup(function(e){
-			var key = e.charCode || e.keyCode;
-			
-				if(key==13){
-				if($.trim($('#field').val())!=''){
-					socket.emit('sendChat', { message: $('#field').val(),name:$scope.name,email:$scope.email });
-					$('#field').val('');
-					$('#field').focus();
-				}
-			}
-		});
-		$('#name,#email').keyup(function(e){
-			var key = e.charCode || e.keyCode;
-			
-			if(key==13){
-				if($.trim($('#name').val())!='' && $.trim($('#email').val())!=''){
-					$('#field').val('');
-					$('#field').focus();
-					$scope.name = $.trim($('#name').val());
-					$scope.email = $.trim($('#email').val());
-					socket.emit('initialize', { name:$scope.name,room:$scope.room,email:$scope.email});
-					if(!$scope.$$phase) $scope.$apply();
-				}
-			}
-		});
-		$(window).on('hashchange', function() {
-			window.location.reload();
-		});
-	});
 
+
+// jquery
+$(function(){
+	$('#field').keyup(function(e){
+		var key = e.charCode || e.keyCode;
+		
+			if(key==13){
+			if($.trim($('#field').val())!=''){
+				socket.emit('sendChat', { message: $('#field').val(),name:$scope.name,email:$scope.email,fbid:$scope.fbid });
+				$('#field').val('');
+				$('#field').focus();
+			}
+		}
+	});
+	$('#name,#email').keyup(function(e){
+		var key = e.charCode || e.keyCode;
+		
+		if(key==13){
+			if($.trim($('#name').val())!='' && $.trim($('#email').val())!=''){
+				$('#field').val('');
+				$('#field').focus();
+				$scope.name = $.trim($('#name').val());
+				$scope.email = $.trim($('#email').val());
+				socket.emit('initialize', { name:$scope.name,room:$scope.room,email:$scope.email});
+				if(!$scope.$$phase) $scope.$apply();
+			}
+		}
+	});
+	$(window).on('hashchange', function() {
+		window.location.reload();
+	});
+});
+	
 }
+
+
+// facebook
+window.fbAsyncInit = function() {
+	FB.init({
+	appId      : '190328391176175',
+	status     : true,
+	xfbml      : true
+	});
+	
+};
+
+(function(d, s, id){
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) {return;}
+	js = d.createElement(s); js.id = id;
+	js.src = "//connect.facebook.net/en_US/all.js";
+	fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));

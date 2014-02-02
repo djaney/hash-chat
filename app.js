@@ -12,7 +12,13 @@ function ChatServer(io){
 	var users = {};
 	var history = {};
 	
-
+	this.getRoomUserCount = function(){
+		var arr = {};
+		for(i in history){
+			arr[i] = history[i].length;
+		}
+		return arr;
+	}
 	
 	var run = function (socket) {
 		var socketId = socket.id;
@@ -77,20 +83,28 @@ function ChatServer(io){
 	
 };
 
-// routes
-// set "/" to renter page.jade template
-app.get("/", function(req, res){
-    res.render("page");
-});
-
-// set public library
-app.use(express.static(__dirname + '/public'));
 
 // initiate socet.io
 var io = require('socket.io').listen(app.listen(PORT));
 
 // define connection handler
 chat = new ChatServer(io);
+
+// routes
+// set "/" to renter page.jade template
+app.get("/", function(req, res){
+    res.render("page");
+});
+app.get("/channels", function(req, res){
+    res.render("channels",{channels:JSON.stringify(chat.getRoomUserCount())});
+});
+
+// set public library
+app.use(express.static(__dirname + '/public'));
+
+
+
+
 
 
 

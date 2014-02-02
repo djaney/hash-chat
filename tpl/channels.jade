@@ -1,0 +1,36 @@
+doctype html
+html(lang="en" ng-app)
+	head
+		title= "Hash Chat"
+		
+		meta(name="viewport" content="width=device-width, initial-scale=1.0")
+		
+		script(src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js")
+		script(src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js")
+		
+		link(href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet")
+		link(href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap-theme.min.css" rel="stylesheet")
+		script(src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js")
+		link(href="/app.css" rel="stylesheet")
+		script(src="/channels.js")
+	body
+		div.container(ng-controller="ChannelsCtrl")
+			div.row		
+				div.col-xs-12
+						div.panel.panel-primary
+							div.panel-heading
+								h4.panel-title="Channels"
+							div.panel-body
+								div.row(ng-repeat="area in areas")
+									h2.col-xs-12="{{area.name}} "
+										span(ng-show="area.count")
+											[{{area.count}}]
+										a(href="/{{area.hash}}")="{{area.hash}}"
+									ul
+										li.col-xs-4(ng-repeat="channel in area.channels | orderBy:name")
+											span(ng-show="channel.count")
+												[{{channel.count}}]
+											a(href="/{{channel.hash}}")="{{channel.name}} ({{channel.hash}})"
+	div#fb-root
+	script.
+		var channels = !{channels};

@@ -1,4 +1,4 @@
-!!!
+doctype html
 html(lang="en" ng-app)
 	head
 		title= "Hash Chat"
@@ -37,8 +37,8 @@ html(lang="en" ng-app)
 						div.panel.panel-default
 							div.panel-heading
 								h4.panel-title
-									a.accordion-toggle(data-toggle="collapse" data-parent="#accordion" href="#collapseChar")="Chat {{room}}"
-							div#collapseChar.panel-collapse.collapse.in	
+									a.accordion-toggle(data-toggle="collapse" data-parent="#accordion" href="#collapse-char")="Chat {{room}}"
+							div#collapse-char.panel-collapse.collapse.in
 								div.panel-body
 									div.row
 										div.form-group.col-xs-12

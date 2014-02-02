@@ -15,8 +15,9 @@ function ChatServer(io){
 	this.getRoomUserCount = function(){
 		var arr = {};
 		for(i in users){
-			arr[i] = users[i].length;
+			arr[i] = Object.keys(users[i]).length;
 		}
+		console.log('test',arr);
 		return arr;
 	}
 	
